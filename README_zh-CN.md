@@ -3,11 +3,11 @@
 </p> -->
 
 <h1 align="center">
-SmallMain's Development Configuration
+SmallMain's Development Scaffolding
 </h1>
 
 <p align="center">
-SmallMain 使用的开发配置。
+SmallMain 使用的开发脚手架。
 </p>
 
 <!-- <br>
@@ -72,7 +72,7 @@ SmallMain 使用的开发配置。
 安装：
 
 ```bash
-npm i -D @smallmains/cfgs
+npm i -D @smallmains/dev
 ```
 
 示例：
@@ -81,17 +81,17 @@ npm i -D @smallmains/cfgs
 
 ```jsonc
 {
-  "extends": "@smallmains/cfgs/ts/base.json",
+  "extends": "@smallmains/dev/ts/base.json",
   "include": ["src"],
 }
 ```
 
-| 路径                               | 说明                                           |
-| ---------------------------------- | ---------------------------------------------- |
-| `@smallmains/cfgs/ts/base.json`    | 基础配置。                                     |
-| `@smallmains/cfgs/ts/generic.json` | 非平台相关、使用 NodeNext 模块规范的通用配置。 |
-| `@smallmains/cfgs/ts/cocos3.json`  | Cocos Creator v3.x 项目配置。                  |
-| `@smallmains/cfgs/ts/node.json`    | Node.js 项目配置。                             |
+| 路径                              | 说明                                           |
+| --------------------------------- | ---------------------------------------------- |
+| `@smallmains/dev/ts/base.json`    | 基础配置。                                     |
+| `@smallmains/dev/ts/generic.json` | 非平台相关、使用 NodeNext 模块规范的通用配置。 |
+| `@smallmains/dev/ts/cocos3.json`  | Cocos Creator v3.x 项目配置。                  |
+| `@smallmains/dev/ts/node.json`    | Node.js 项目配置。                             |
 
 ## VS Code Config
 
@@ -104,7 +104,7 @@ npm i -D @smallmains/cfgs
 安装：
 
 ```bash
-npm i -D @smallmains/cfgs
+npm i -D @smallmains/dev
 ```
 
 示例：
@@ -113,23 +113,23 @@ npm i -D @smallmains/cfgs
 
 ```ts
 import { defineConfig } from "oxlint";
-import base from "@smallmains/cfgs/oxlint/base.js";
+import base from "@smallmains/dev/oxlint/base.js";
 
 export default defineConfig({
   extends: [base],
 });
 ```
 
-| 路径                              | 说明       |
-| --------------------------------- | ---------- |
-| `@smallmains/cfgs/oxlint/base.js` | 基础配置。 |
+| 路径                             | 说明       |
+| -------------------------------- | ---------- |
+| `@smallmains/dev/oxlint/base.js` | 基础配置。 |
 
 ## Oxfmt Config
 
 安装：
 
 ```bash
-npm i -D @smallmains/cfgs
+npm i -D @smallmains/dev
 ```
 
 示例：
@@ -137,21 +137,21 @@ npm i -D @smallmains/cfgs
 `oxfmt.config.ts`
 
 ```ts
-import generic from "@smallmains/cfgs/oxfmt/generic.js";
+import generic from "@smallmains/dev/oxfmt/generic.js";
 
 export default generic;
 ```
 
-| 路径                                | 说明       |
-| ----------------------------------- | ---------- |
-| `@smallmains/cfgs/oxfmt/generic.js` | 通用配置。 |
+| 路径                               | 说明       |
+| ---------------------------------- | ---------- |
+| `@smallmains/dev/oxfmt/generic.js` | 通用配置。 |
 
 ## Stylelint Config
 
 安装：
 
 ```bash
-npm i -D @smallmains/cfgs
+npm i -D @smallmains/dev
 ```
 
 示例：
@@ -160,15 +160,15 @@ npm i -D @smallmains/cfgs
 
 ```ts
 {
-  "extends": "@smallmains/cfgs/stylelint/generic.js",
+  "extends": "@smallmains/dev/stylelint/generic.js",
 }
 ```
 
-| 路径                                        | 说明                       |
-| ------------------------------------------- | -------------------------- |
-| `@smallmains/cfgs/stylelint/generic.js`     | 通用配置。                 |
-| `@smallmains/cfgs/stylelint/css-modules.js` | 使用 CSS Modules 的配置。  |
-| `@smallmains/cfgs/stylelint/tailwind.js`    | 使用 Tailwind CSS 的配置。 |
+| 路径                                       | 说明                       |
+| ------------------------------------------ | -------------------------- |
+| `@smallmains/dev/stylelint/generic.js`     | 通用配置。                 |
+| `@smallmains/dev/stylelint/css-modules.js` | 使用 CSS Modules 的配置。  |
+| `@smallmains/dev/stylelint/tailwind.js`    | 使用 Tailwind CSS 的配置。 |
 
 ## 贡献
 

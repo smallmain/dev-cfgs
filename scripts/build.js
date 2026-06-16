@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const outDir = path.join(rootDir, "dist/npm/cfgs");
+const outDir = path.join(rootDir, "dist/npm/dev");
 
 const outPackageDir = path.join(rootDir, "web/out-package");
 const packageTemplateDir = path.join(rootDir, "web/package-template");

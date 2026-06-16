@@ -26,7 +26,7 @@ Description.
 <!-- ## Introduction
 
 ```bash
-npm i -D @meojs/cfgs
+npm i -D @smallmains/dev
 ``` -->
 
 <!-- ## Documentation

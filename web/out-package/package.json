@@ -1,10 +1,10 @@
 {
-  "name": "@smallmains/cfgs",
-  "version": "1.0.1",
+  "name": "@smallmains/dev",
+  "version": "1.0.0",
   "description": "SmallMain's development configurations.",
   "homepage": "https://smallmain.com",
   "bugs": {
-    "url": "https://github.com/smallmain/dev-cfgs/issues"
+    "url": "https://github.com/smallmain/dev/issues"
   },
   "license": "MIT",
   "author": {
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/smallmain/dev-cfgs.git"
+    "url": "git+https://github.com/smallmain/dev.git"
   },
   "funding": "https://github.com/sponsors/smallmain",
   "type": "module",

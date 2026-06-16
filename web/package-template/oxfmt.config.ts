@@ -1,3 +1,3 @@
-import generic from "@smallmains/cfgs/oxfmt/generic.js";
+import generic from "@smallmains/dev/oxfmt/generic.js";
 
 export default generic;

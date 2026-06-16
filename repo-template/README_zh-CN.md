@@ -26,7 +26,7 @@
 <!-- ## 简介
 
 ```bash
-npm i -D @meojs/cfgs
+npm i -D @smallmains/dev
 ``` -->
 
 <!-- ## 文档
