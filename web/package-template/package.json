@@ -2,7 +2,7 @@
   "name": "name",
   "version": "1.0.0",
   "description": "Description.",
-  "homepage": "https://smallmain.com/",
+  "homepage": "https://smallmain.com",
   "bugs": {
     "url": "https://github.com/smallmain/..."
   },
@@ -10,7 +10,7 @@
   "author": {
     "name": "SmallMain",
     "email": "smallmain@outlook.com",
-    "url": "https://www.smallmain.com/"
+    "url": "https://smallmain.com"
   },
   "repository": {
     "type": "git",

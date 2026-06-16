@@ -2,7 +2,7 @@
   "name": "@smallmains/cfgs",
   "version": "1.0.0",
   "description": "SmallMain's development configurations.",
-  "homepage": "https://smallmain.com/",
+  "homepage": "https://smallmain.com",
   "bugs": {
     "url": "https://github.com/smallmain/dev-cfgs/issues"
   },
@@ -10,7 +10,7 @@
   "author": {
     "name": "SmallMain",
     "email": "smallmain@outlook.com",
-    "url": "https://www.smallmain.com/"
+    "url": "https://smallmain.com"
   },
   "repository": {
     "type": "git",
