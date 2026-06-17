@@ -1,23 +1,23 @@
 import { spawn } from "node:child_process";
-import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { chmod, cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = path.join(rootDir, "dist/npm/dev");
 
-const outPackageDir = path.join(rootDir, "web/out-package");
-const packageTemplateDir = path.join(rootDir, "web/package-template");
+const jsonSourceDirs = [["configs/web/typescript", "ts"]];
 
-const jsonSourceDirs = [["web/ts-config", "ts"]];
-
-const typescriptSourceDirs = [
-  ["web/oxlint-config", "oxlint"],
-  ["web/oxfmt-config", "oxfmt"],
-  ["web/stylelint-config", "stylelint"],
+const copiedSourceDirs = [
+  ["configs/common", "configs/common"],
+  ["templates", "templates"],
 ];
 
-const publishFiles = ["index.js", "types", "ts", "oxlint", "oxfmt", "stylelint"];
+const typescriptSourceDirs = [
+  ["configs/web/oxlint", "oxlint"],
+  ["configs/web/oxfmt", "oxfmt"],
+  ["configs/web/stylelint", "stylelint"],
+];
 
 async function readJson(filePath) {
   return JSON.parse(await readFile(filePath, "utf8"));
@@ -67,52 +67,9 @@ function runCommand(command, args) {
   });
 }
 
-function createDependencies(dependencyNames, dependencyVersions, sourceDescription) {
-  return Object.fromEntries(
-    dependencyNames.map((name) => {
-      const version = dependencyVersions[name];
-
-      if (!version) {
-        throw new Error(`Missing version for dependency "${name}" in ${sourceDescription}.`);
-      }
-
-      return [name, version];
-    }),
-  );
-}
-
-function createPeerDependenciesMeta(peerDependencyNames) {
-  return Object.fromEntries(peerDependencyNames.map((name) => [name, { optional: true }]));
-}
-
 async function buildPackageJson() {
-  const packageJson = await readJson(path.join(outPackageDir, "package.json"));
-  const rootPackageJson = await readJson(path.join(rootDir, "package.json"));
-  const config = await readJson(path.join(outPackageDir, "config.json"));
-  const packageTemplate = await readJson(path.join(packageTemplateDir, "package.json"));
-
-  if (!Array.isArray(config.dependencies)) {
-    throw new TypeError("web/out-package/config.json dependencies must be an array.");
-  }
-
-  if (!Array.isArray(config.peerDependencies)) {
-    throw new TypeError("web/out-package/config.json peerDependencies must be an array.");
-  }
-
+  const packageJson = await readJson(path.join(rootDir, "package.json"));
   delete packageJson.devEngines;
-
-  packageJson.files = publishFiles;
-  packageJson.dependencies = createDependencies(
-    config.dependencies,
-    rootPackageJson.devDependencies ?? {},
-    "package.json",
-  );
-  packageJson.peerDependencies = createDependencies(
-    config.peerDependencies,
-    packageTemplate.devDependencies ?? {},
-    "web/package-template/package.json",
-  );
-  packageJson.peerDependenciesMeta = createPeerDependenciesMeta(config.peerDependencies);
 
   await writeJson(path.join(outDir, "package.json"), packageJson);
 }
@@ -128,6 +85,7 @@ async function buildTypeScriptConfig(sourceDir, targetDir) {
   await runCommand("pnpm", [
     "exec",
     "tsc",
+    "--ignoreConfig",
     "--module",
     "NodeNext",
     "--moduleResolution",
@@ -146,6 +104,43 @@ async function buildTypeScriptConfig(sourceDir, targetDir) {
   ]);
 }
 
+async function buildCli() {
+  const sourcePath = path.join(rootDir, "src");
+  const sourceFiles = await collectTypeScriptFiles(sourcePath);
+
+  await runCommand("pnpm", [
+    "exec",
+    "tsc",
+    "--ignoreConfig",
+    "--module",
+    "NodeNext",
+    "--moduleResolution",
+    "NodeNext",
+    "--target",
+    "ES2022",
+    "--rewriteRelativeImportExtensions",
+    "--strict",
+    "--noEmitOnError",
+    "--skipLibCheck",
+    "--types",
+    "node",
+    "--rootDir",
+    sourcePath,
+    "--outDir",
+    path.join(outDir, "cli"),
+    ...sourceFiles,
+  ]);
+}
+
+async function writeBin() {
+  const binDir = path.join(outDir, "bin");
+  const binPath = path.join(binDir, "sm.js");
+
+  await mkdir(binDir, { recursive: true });
+  await writeFile(binPath, "#!/usr/bin/env node\nimport \"../cli/index.js\";\n");
+  await chmod(binPath, 0o755);
+}
+
 export async function buildPackageFiles() {
   await rm(outDir, { force: true, recursive: true });
   await mkdir(outDir, { recursive: true });
@@ -159,9 +154,19 @@ export async function buildPackageFiles() {
     });
   }
 
+  for (const [sourceDir, targetDir] of copiedSourceDirs) {
+    await cp(path.join(rootDir, sourceDir), path.join(outDir, targetDir), {
+      filter: (source) => path.basename(source) !== ".DS_Store",
+      recursive: true,
+    });
+  }
+
   for (const [sourceDir, targetDir] of typescriptSourceDirs) {
     await buildTypeScriptConfig(sourceDir, targetDir);
   }
+
+  await buildCli();
+  await writeBin();
 
   await writeFile(path.join(outDir, "index.js"), "export {};\n");
   await mkdir(path.join(outDir, "types"), { recursive: true });

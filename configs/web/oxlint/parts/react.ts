@@ -1,0 +1,37 @@
+import { defineConfig } from "oxlint";
+
+export default defineConfig({
+  plugins: ["react", "react-perf", "jsx-a11y"],
+  rules: {
+    "react/button-has-type": "error",
+    "react/checked-requires-onchange-or-readonly": "error",
+    "react/iframe-missing-sandbox": "warn",
+    "react/jsx-no-comment-textnodes": "error",
+    "react/jsx-no-constructed-context-values": "warn",
+    "react/jsx-no-script-url": "error",
+    "react/jsx-no-target-blank": "error",
+    "react/no-array-index-key": "warn",
+    "react/no-namespace": "error",
+    "react/no-object-type-as-default-prop": "warn",
+    "react/no-redundant-should-component-update": "warn",
+    "react/no-unescaped-entities": "warn",
+    "react/no-unknown-property": "error",
+    "react/no-unstable-nested-components": "warn",
+    "react/rules-of-hooks": "error",
+    "react/style-prop-object": "error",
+    "react/hook-use-state": "warn",
+    "react/jsx-handler-names": "warn",
+    "react/no-clone-element": "warn",
+    "react/no-react-children": "warn",
+    "react/no-danger": "warn",
+    "react/only-export-components": "warn",
+    "react/prefer-es6-class": "warn",
+    "react/prefer-function-component": "warn",
+    "react/react-compiler": ["warn", { reportAllBailouts: true }],
+
+    "react-perf/jsx-no-jsx-as-prop": "warn",
+    "react-perf/jsx-no-new-function-as-prop": "warn",
+    "react-perf/jsx-no-new-object-as-prop": "warn",
+    "react-perf/jsx-no-new-array-as-prop": "warn",
+  },
+});

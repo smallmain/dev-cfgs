@@ -105,7 +105,7 @@ async function updatePackageVersion(filePath, version) {
 }
 
 const { npmArgs, version } = parseArgs(process.argv.slice(2));
-const sourcePackageJsonPath = path.join(rootDir, "web/out-package/package.json");
+const sourcePackageJsonPath = path.join(rootDir, "package.json");
 const outPackageJsonPath = path.join(outDir, "package.json");
 const sourcePackageJson = await readJson(sourcePackageJsonPath);
 const nextVersion = resolveVersion(sourcePackageJson.version, version);

@@ -27,19 +27,22 @@ SmallMain 使用的开发脚手架。
 
 <table>
   <tr>
-    <th>技术</th><th>配置</th><th>最后更新</th>
+    <th>技术</th><th>组件</th><th>最后更新</th>
   </tr>
   <tr>
-    <td rowspan="2">-</td><td><a href="#open-source-template">Open Source Template</a></td><td>2025.06.15</td>
+    <td rowspan="3">-</td>
   </tr>
   <tr>
-    <td><a href="#editor-config">Editor Config</a></td><td>EditorConfig Specification v0.17.2; 2025.6.15</td>
+    <td><a href="#cli">CLI</a></td><td>2026.06.15</td>
   </tr>
   <tr>
-    <td rowspan="6">Web</td><td><a href="#package-template">Package Template</a></td><td>2025.6.15</td>
+    <td><a href="#editor-config">Editor Config</a></td><td>EditorConfig Specification v0.17.2; 2026.06.15</td>
   </tr>
   <tr>
-    <td><a href="#web">VS Code Config</a></td><td>VS Code v1.124.2; 2025.6.15</td>
+    <td rowspan="6">Web</td>
+  </tr>
+  <tr>
+    <td><a href="#web">VS Code Config</a></td><td>VS Code v1.124.2; 2026.06.15</td>
   </tr>
   <tr>
     <td><a href="#ts-config">TS Config</a></td><td>2025.06.15</td>
@@ -55,17 +58,31 @@ SmallMain 使用的开发脚手架。
   </tr>
 </table>
 
-## Open Source Template
+## CLI
 
-拷贝 `repo-template` 目录下的文件。
+安装：
+
+```bash
+npm i -D @smallmains/dev
+```
+
+### create
+
+```bash
+npx sm create
+```
+
+`create` 会在当前工作目录生成文件，不会清空目录，但会覆盖同名文件。
+
+### lint
+
+预留命令，暂未实现。
 
 ## Editor Config
 
-拷贝 `misc/.editorconfig` 文件到项目根目录。
-
-## Package Template
-
-拷贝 `web/package-template` 目录下的文件。
+| 路径                           | 说明       |
+| ------------------------------ | ---------- |
+| `configs/common/.editorconfig` | 通用配置。 |
 
 ## TS Config
 
@@ -91,13 +108,13 @@ npm i -D @smallmains/dev
 | `@smallmains/dev/ts/base.json`    | 基础配置。                                     |
 | `@smallmains/dev/ts/generic.json` | 非平台相关、使用 NodeNext 模块规范的通用配置。 |
 | `@smallmains/dev/ts/cocos3.json`  | Cocos Creator v3.x 项目配置。                  |
-| `@smallmains/dev/ts/node.json`    | Node.js 项目配置。                             |
+| `@smallmains/dev/ts/nodejs.json`  | Node.js 项目配置。                             |
 
 ## VS Code Config
 
 ### Web
 
-拷贝 `web/vscode-config` 目录为项目根目录的 `.vscode` 目录。
+由 `sm create` 根据选择的技术栈和组件动态生成 `.vscode` 目录。基础配置推荐 EditorConfig 与 OXC；选择 `css` 组件时额外推荐 Stylelint 并生成 `stylelint.validate`。
 
 ## Oxlint Config
 
@@ -113,16 +130,20 @@ npm i -D @smallmains/dev
 
 ```ts
 import { defineConfig } from "oxlint";
-import base from "@smallmains/dev/oxlint/base.js";
+import generic, { vitest } from "@smallmains/dev/oxlint/generic.js";
 
 export default defineConfig({
-  extends: [base],
+  extends: [generic, vitest],
 });
 ```
 
-| 路径                             | 说明       |
-| -------------------------------- | ---------- |
-| `@smallmains/dev/oxlint/base.js` | 基础配置。 |
+所有配置均通过 `@smallmains/dev/oxlint/generic.js` 导出：
+
+- `default`: 通用配置。
+- `vitest`: 适用于使用 Vitest 的项目的配置。
+- `react`: 适用于使用 React 的项目的配置。
+- `nodejs`: 适用于使用 Node.js 的项目的配置。
+- `security`: 适用于注重安全性的项目的配置。
 
 ## Oxfmt Config
 
@@ -172,6 +193,8 @@ npm i -D @smallmains/dev
 
 ## 贡献
 
+- 执行 `pnpm run dev` 从源码运行 CLI。
+- 执行 `pnpm run dev:prod` 构建并从产物运行 CLI。
 - 执行 `pnpm run build` 构建项目。
 - 执行 `pnpm run publish` 构建并推送新版本。
   - `--version <version>`：指定版本号（例如 `patch`、`minor`、`major` 或具体版本号）。

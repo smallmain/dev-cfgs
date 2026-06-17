@@ -1,17 +1,57 @@
 {
-  "private": true,
+  "name": "@smallmains/dev",
+  "version": "1.0.0",
+  "description": "SmallMain's development scaffolding.",
+  "homepage": "https://smallmain.com",
+  "bugs": {
+    "url": "https://github.com/smallmain/dev/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "SmallMain",
+    "email": "smallmain@outlook.com",
+    "url": "https://smallmain.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smallmain/dev.git"
+  },
+  "funding": "https://github.com/sponsors/smallmain",
+  "bin": {
+    "sm": "./bin/sm.js"
+  },
+  "files": [
+    "bin",
+    "cli",
+    "configs",
+    "index.js",
+    "oxfmt",
+    "oxlint",
+    "stylelint",
+    "templates",
+    "ts",
+    "types"
+  ],
   "type": "module",
+  "main": "index.js",
+  "types": "./types/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
+    "dev": "node scripts/dev.js",
+    "dev:prod": "node scripts/dev-prod.js",
     "build": "node scripts/build.js",
     "publish": "node scripts/publish.js"
   },
-  "devDependencies": {
+  "dependencies": {
     "@dreamsicle.io/stylelint-config-tailwindcss": "^1.2.2",
-    "oxfmt": "^0.55.0",
-    "oxlint": "^1.70.0",
+    "@e18e/eslint-plugin": "^0.5.1",
+    "@inquirer/prompts": "^8.5.2",
+    "commander": "^15.0.0",
+    "eslint-plugin-security": "^4.0.1",
     "postcss-html": "^1.8.1",
     "postcss-markdown": "^1.3.1",
-    "stylelint": "^17.13.0",
     "stylelint-config-clean-order": "^10.0.0",
     "stylelint-config-css-modules": "^4.6.0",
     "stylelint-config-html": "^1.1.0",
@@ -19,7 +59,47 @@
     "stylelint-config-standard": "^40.0.0",
     "stylelint-high-performance-animation": "^2.0.0",
     "stylelint-order": "^8.1.1",
-    "stylelint-plugin-logical-css": "^2.1.0",
+    "stylelint-plugin-logical-css": "^2.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "husky": "^9.1.7",
+    "lint-staged.sh": "^0.6.9",
+    "oxfmt": "^0.55.0",
+    "oxlint": "^1.70.0",
+    "oxlint-tsgolint": "^0.23.0",
+    "stylelint": "^17.13.0",
     "typescript": "^6.0.3"
+  },
+  "peerDependencies": {
+    "oxfmt": "^0.55.0",
+    "oxlint": "^1.70.0",
+    "oxlint-tsgolint": "^0.23.0",
+    "stylelint": "^17.13.0",
+    "typescript": "^6.0.3"
+  },
+  "peerDependenciesMeta": {
+    "oxfmt": {
+      "optional": true
+    },
+    "oxlint": {
+      "optional": true
+    },
+    "oxlint-tsgolint": {
+      "optional": true
+    },
+    "stylelint": {
+      "optional": true
+    },
+    "typescript": {
+      "optional": true
+    }
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^11.5.3",
+      "onFail": "download"
+    }
   }
 }
