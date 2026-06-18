@@ -6,11 +6,17 @@ interface RawSetGitHookOptions {
   force?: boolean;
 }
 
-const managedMarker = "# sm managed pre-commit hook";
-const hookContent = `#!/bin/sh
-${managedMarker}
+const managedPreCommitMarker = "# sm managed pre-commit hook";
+const managedCommitMessageMarker = "# sm managed commit-msg hook";
+const preCommitHookContent = `#!/bin/sh
+${managedPreCommitMarker}
 PATH="$(git rev-parse --show-toplevel)/node_modules/.bin:$PATH"
 sm staged-run "pnpm run lint" "."
+`;
+const commitMessageHookContent = `#!/bin/sh
+${managedCommitMessageMarker}
+PATH="$(git rev-parse --show-toplevel)/node_modules/.bin:$PATH"
+sm lint --commit-message "$1" --file
 `;
 
 export async function runSetGitHookCommand(options: RawSetGitHookOptions): Promise<void> {
@@ -26,27 +32,50 @@ export async function runSetGitHookCommand(options: RawSetGitHookOptions): Promi
     return;
   }
 
-  const hookPath = path.join(gitDir, "hooks", "pre-commit");
-  const existingContent = await readOptionalFile(hookPath);
   const hooksPath = await getHooksPath();
-
-  if (
-    existingContent !== undefined &&
-    !existingContent.includes(managedMarker) &&
-    options.force !== true
-  ) {
-    throw new Error("Existing pre-commit hook is not managed by sm. Re-run with --force to overwrite it.");
-  }
 
   if (hooksPath && !isHuskyHooksPath(hooksPath) && options.force !== true) {
     throw new Error("Git core.hooksPath is set. Re-run with --force to use .git/hooks.");
   }
 
-  await mkdir(path.dirname(hookPath), { recursive: true });
-  await writeFile(hookPath, hookContent);
-  await chmod(hookPath, 0o755);
+  await writeManagedHook({
+    content: preCommitHookContent,
+    force: options.force === true,
+    gitDir,
+    marker: managedPreCommitMarker,
+    name: "pre-commit",
+  });
+  await writeManagedHook({
+    content: commitMessageHookContent,
+    force: options.force === true,
+    gitDir,
+    marker: managedCommitMessageMarker,
+    name: "commit-msg",
+  });
   await resetHooksPath(hooksPath, options.force === true);
-  console.log(`Installed ${hookPath}`);
+  console.log(`Installed ${path.join(gitDir, "hooks", "pre-commit")}`);
+  console.log(`Installed ${path.join(gitDir, "hooks", "commit-msg")}`);
+}
+
+async function writeManagedHook(options: {
+  content: string;
+  force: boolean;
+  gitDir: string;
+  marker: string;
+  name: string;
+}): Promise<void> {
+  const hookPath = path.join(options.gitDir, "hooks", options.name);
+  const existingContent = await readOptionalFile(hookPath);
+
+  if (existingContent !== undefined && !existingContent.includes(options.marker) && !options.force) {
+    throw new Error(
+      `Existing ${options.name} hook is not managed by sm. Re-run with --force to overwrite it.`,
+    );
+  }
+
+  await mkdir(path.dirname(hookPath), { recursive: true });
+  await writeFile(hookPath, options.content);
+  await chmod(hookPath, 0o755);
 }
 
 async function hasLocalGitDirectory(): Promise<boolean> {

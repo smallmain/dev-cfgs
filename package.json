@@ -45,6 +45,10 @@
     "publish": "node scripts/publish.js"
   },
   "dependencies": {
+    "@commitlint/config-conventional": "21.0.2",
+    "@commitlint/lint": "21.0.2",
+    "@commitlint/load": "21.0.2",
+    "@commitlint/types": "21.0.1",
     "@dreamsicle.io/stylelint-config-tailwindcss": "^1.2.2",
     "@e18e/eslint-plugin": "^0.5.1",
     "@oxlint/plugins": "^1.70.0",

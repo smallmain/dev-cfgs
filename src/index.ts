@@ -49,8 +49,15 @@ async function main(): Promise<void> {
   program
     .command("lint [files...]")
     .description("Run project lint tools.")
+    .option("--commit-message <message>", "Lint a commit message.")
+    .option("--file", "Read --commit-message as a file path.")
     .option("--fix", "Automatically fix problems.")
-    .action((files: string[], options: { fix?: boolean }) => runLintCommand(files, options));
+    .action(
+      (
+        files: string[],
+        options: { commitMessage?: string; file?: boolean; fix?: boolean },
+      ) => runLintCommand(files, options),
+    );
 
   program
     .command("staged-run [command] [globs...]")

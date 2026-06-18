@@ -89,6 +89,8 @@ npx sm create
 npx sm lint
 npx sm lint --fix
 npx sm lint src/index.ts
+npx sm lint --commit-message "feat: add login"
+npx sm lint --commit-message .git/COMMIT_EDITMSG --file
 ```
 
 ### staged-run
@@ -108,6 +110,7 @@ npx sm set-git-hook
 该命令会安装 Git Hooks：
 
 - `pre-commit`: 使用 `sm staged-run` 对暂存文件执行 lint。
+- `commit-msg`: 使用 `sm lint --commit-message "$1" --file` 校验提交信息。
 
 ## Editor Config
 

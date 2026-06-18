@@ -1,8 +1,13 @@
+import lintCommitMessage from "@commitlint/lint";
+import loadCommitlintConfig from "@commitlint/load";
+import type { LintOptions } from "@commitlint/types";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { isCommandAvailable, runCommand } from "./command-utils.ts";
 
 interface RawLintOptions {
+  commitMessage?: string;
+  file?: boolean;
   fix?: boolean;
 }
 
@@ -52,11 +57,11 @@ export async function runLintCommand(files: string[], options: RawLintOptions): 
     await createStylelintRunner(cwd, files, options),
   ].filter((runner): runner is LintRunner => runner !== undefined);
 
-  if (runners.length === 0) {
-    return;
-  }
-
   let exitCode = 0;
+
+  if (options.file === true && options.commitMessage === undefined) {
+    throw new Error("--file can only be used with --commit-message.");
+  }
 
   for (const runner of runners) {
     const result = await runCommand(runner.command, runner.args, { cwd });
@@ -66,9 +71,35 @@ export async function runLintCommand(files: string[], options: RawLintOptions): 
     }
   }
 
+  if (options.commitMessage !== undefined && !(await lintCommitMessageOption(options))) {
+    exitCode = 1;
+  }
+
   if (exitCode !== 0) {
     process.exitCode = exitCode;
   }
+}
+
+async function lintCommitMessageOption(options: RawLintOptions): Promise<boolean> {
+  const message =
+    options.file === true ? await readFile(options.commitMessage ?? "", "utf8") : options.commitMessage ?? "";
+  const config = await loadCommitlintConfig({ extends: ["@commitlint/config-conventional"] });
+  const lintOptions: LintOptions = {
+    parserOpts: config.parserPreset?.parserOpts as LintOptions["parserOpts"],
+  };
+  const result = await lintCommitMessage(message, config.rules, {
+    parserOpts: lintOptions.parserOpts,
+  });
+
+  for (const warning of result.warnings) {
+    console.warn(`commit-message warning: ${warning.message}`);
+  }
+
+  for (const error of result.errors) {
+    console.error(`commit-message error: ${error.message}`);
+  }
+
+  return result.valid;
 }
 
 interface LintRunner {
