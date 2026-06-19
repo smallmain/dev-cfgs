@@ -82,10 +82,10 @@ function hasDryRunArg(args) {
   return args.some(arg => arg === "--dry-run" || arg === "--dry-run=true");
 }
 
-function pnpmPublish(args) {
+function runCommand(command, args, cwd = rootDir) {
   return new Promise((resolve, reject) => {
-    const child = spawn("pnpm", ["publish", ...args], {
-      cwd: outDir,
+    const child = spawn(command, args, {
+      cwd,
       stdio: "inherit",
     });
 
@@ -96,9 +96,54 @@ function pnpmPublish(args) {
         return;
       }
 
-      reject(new Error(`pnpm publish exited with code ${code}.`));
+      reject(new Error(`${command} ${args.join(" ")} exited with code ${code}.`));
     });
   });
+}
+
+function readCommandOutput(command, args, cwd = rootDir) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    let stdout = "";
+    let stderr = "";
+
+    child.stdout.on("data", chunk => {
+      stdout += chunk;
+    });
+    child.stderr.on("data", chunk => {
+      stderr += chunk;
+    });
+    child.on("error", reject);
+    child.on("exit", code => {
+      if (code === 0) {
+        resolve(stdout);
+        return;
+      }
+
+      reject(new Error(`${command} ${args.join(" ")} exited with code ${code}.\n${stderr}`));
+    });
+  });
+}
+
+async function ensureCleanGitWorkingTree() {
+  const status = await readCommandOutput("git", ["status", "--porcelain"]);
+
+  if (status.trim()) {
+    throw new Error("Cannot publish with uncommitted changes. Commit or stash them before publishing.");
+  }
+}
+
+async function commitAndPushVersion(version) {
+  await runCommand("git", ["add", "package.json"]);
+  await runCommand("git", ["commit", "-m", `chore: release v${version}`]);
+  await runCommand("git", ["push"]);
+}
+
+function pnpmPublish(args) {
+  return runCommand("pnpm", ["publish", ...args], outDir);
 }
 
 async function updatePackageVersion(filePath, version) {
@@ -114,9 +159,19 @@ const sourcePackageJson = await readJson(sourcePackageJsonPath);
 const nextVersion = resolveVersion(sourcePackageJson.version, version);
 const dryRun = hasDryRunArg(publishArgs);
 
+if (version && nextVersion === sourcePackageJson.version) {
+  throw new Error(`Version is already ${nextVersion}.`);
+}
+
+if (version && !dryRun) {
+  await ensureCleanGitWorkingTree();
+  await updatePackageVersion(sourcePackageJsonPath, nextVersion);
+  await commitAndPushVersion(nextVersion);
+}
+
 await buildPackageFiles();
 
-if (version) {
+if (version && dryRun) {
   await updatePackageVersion(outPackageJsonPath, nextVersion);
 }
 
@@ -125,7 +180,3 @@ console.log(
 );
 
 await pnpmPublish(publishArgs);
-
-if (version && !dryRun) {
-  await updatePackageVersion(sourcePackageJsonPath, nextVersion);
-}

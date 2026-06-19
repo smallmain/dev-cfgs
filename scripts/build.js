@@ -30,7 +30,7 @@ async function writeJson(filePath, value) {
 async function collectTypeScriptFiles(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
   const files = await Promise.all(
-    entries.map((entry) => {
+    entries.map(entry => {
       const entryPath = path.join(dir, entry.name);
 
       if (entry.isDirectory()) {
@@ -56,7 +56,7 @@ function runCommand(command, args) {
     });
 
     child.on("error", reject);
-    child.on("exit", (code) => {
+    child.on("exit", code => {
       if (code === 0) {
         resolve();
         return;
@@ -70,6 +70,7 @@ function runCommand(command, args) {
 async function buildPackageJson() {
   const packageJson = await readJson(path.join(rootDir, "package.json"));
   delete packageJson.devEngines;
+  delete packageJson.scripts;
 
   await writeJson(path.join(outDir, "package.json"), packageJson);
 }
@@ -137,7 +138,7 @@ async function writeBin() {
   const binPath = path.join(binDir, "sm.js");
 
   await mkdir(binDir, { recursive: true });
-  await writeFile(binPath, "#!/usr/bin/env node\nimport \"../cli/index.js\";\n");
+  await writeFile(binPath, '#!/usr/bin/env node\nimport "../cli/index.js";\n');
   await chmod(binPath, 0o755);
 }
 
@@ -149,14 +150,14 @@ export async function buildPackageFiles() {
 
   for (const [sourceDir, targetDir] of jsonSourceDirs) {
     await cp(path.join(rootDir, sourceDir), path.join(outDir, targetDir), {
-      filter: (source) => path.basename(source) !== ".DS_Store",
+      filter: source => path.basename(source) !== ".DS_Store",
       recursive: true,
     });
   }
 
   for (const [sourceDir, targetDir] of copiedSourceDirs) {
     await cp(path.join(rootDir, sourceDir), path.join(outDir, targetDir), {
-      filter: (source) => path.basename(source) !== ".DS_Store",
+      filter: source => path.basename(source) !== ".DS_Store",
       recursive: true,
     });
   }
