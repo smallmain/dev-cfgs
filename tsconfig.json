@@ -1,8 +1,7 @@
 {
   "extends": ["./configs/web/typescript/nodejs.json"],
   "compilerOptions": {
-    "rewriteRelativeImportExtensions": true,
     "types": ["node"]
   },
-  "include": ["configs/**/*.ts", "src/**/*.ts"]
+  "exclude": ["dist", "scripts"]
 }

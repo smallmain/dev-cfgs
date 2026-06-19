@@ -123,6 +123,7 @@ interface FormState {
 const commonTemplateDir = path.join(packageRootDir, "templates/common");
 const commonConfigDir = path.join(packageRootDir, "configs/common");
 const webNpmPackageTemplateDir = path.join(packageRootDir, "templates/web/npm-package");
+const webNpmPackageCssTemplateDir = path.join(packageRootDir, "templates/web/npm-package-css");
 
 const supportedStacks = new Set(["web"]);
 const supportedWebPresets = new Set(["npm-package"]);
@@ -153,23 +154,12 @@ export async function runCreateCommand(
 ): Promise<void> {
   const context = await resolveCreateContext(options, packageJson);
   const targetDir = process.cwd();
+  const templateValues = createTemplateValues(context, packageJson);
 
   await ensureGitRepository(targetDir);
-  await renderTemplateDirectory(
-    commonTemplateDir,
-    targetDir,
-    createTemplateValues(context, packageJson),
-  );
-  await renderTemplateDirectory(
-    commonConfigDir,
-    targetDir,
-    createTemplateValues(context, packageJson),
-  );
-  await renderTemplateDirectory(
-    webNpmPackageTemplateDir,
-    targetDir,
-    createTemplateValues(context, packageJson),
-  );
+  await renderTemplateDirectory(commonTemplateDir, targetDir, templateValues);
+  await renderTemplateDirectory(commonConfigDir, targetDir, templateValues);
+  await renderTemplateDirectory(webNpmPackageTemplateDir, targetDir, templateValues);
   await writeJson(
     path.join(targetDir, "package.json"),
     createProjectPackageJson(context, packageJson),
@@ -177,7 +167,7 @@ export async function runCreateCommand(
   await writeVsCodeConfig(targetDir, context);
 
   if (hasCssComponent(context)) {
-    await writeFile(path.join(targetDir, "stylelint.config.ts"), createStylelintConfig(context));
+    await renderTemplateDirectory(webNpmPackageCssTemplateDir, targetDir, templateValues);
   }
 
   console.log(`Installing dependencies with ${context.packageManager}...`);
@@ -1060,6 +1050,7 @@ function createTemplateValues(context: CreateContext, packageJson: PackageJson):
     licenseYear: String(new Date().getFullYear()),
     packageManager: context.packageManager,
     typescriptConfig: createTypeScriptConfigName(context.runtime),
+    stylelintConfig: createStylelintConfigName(context.cssComponent),
     oxlintNamedImports,
     oxlintExtends,
   };
@@ -1275,12 +1266,6 @@ function hasCssComponent(context: CreateContext): boolean {
 
 function hasGitHookComponent(context: CreateContext): boolean {
   return context.webComponents.includes("git-hook");
-}
-
-function createStylelintConfig(context: CreateContext): string {
-  const configName = createStylelintConfigName(context.cssComponent);
-
-  return `import type { Config } from "stylelint";\n\nexport default {\n  extends: "@smallmains/dev/stylelint/${configName}.js",\n} satisfies Config;\n`;
 }
 
 function createStylelintConfigName(cssComponent: CssComponent): string {
