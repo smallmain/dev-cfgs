@@ -1,7 +1,7 @@
-import { spawn } from "node:child_process";
 import { chmod, cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import spawn from "nano-spawn";
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = path.join(rootDir, "dist/npm/dev");
@@ -48,22 +48,10 @@ async function collectTypeScriptFiles(dir) {
   return files.flat();
 }
 
-function runCommand(command, args) {
-  return new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      cwd: rootDir,
-      stdio: "inherit",
-    });
-
-    child.on("error", reject);
-    child.on("exit", code => {
-      if (code === 0) {
-        resolve();
-        return;
-      }
-
-      reject(new Error(`${command} ${args.join(" ")} exited with code ${code}.`));
-    });
+async function runCommand(command, args) {
+  await spawn(command, args, {
+    cwd: rootDir,
+    stdio: "inherit",
   });
 }
 

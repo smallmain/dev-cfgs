@@ -64,7 +64,7 @@ export async function runLintCommand(files: string[], options: RawLintOptions): 
   }
 
   for (const runner of runners) {
-    const result = await runCommand(runner.command, runner.args, { cwd });
+    const result = await runCommand(runner.command, runner.args, { cwd, preferLocal: true });
 
     if (result.code !== 0) {
       exitCode = result.code;
@@ -112,7 +112,10 @@ async function createOxlintRunner(
   files: string[],
   options: RawLintOptions,
 ): Promise<LintRunner | undefined> {
-  if (!(await isCommandAvailable("oxlint")) || !(await usesTool(cwd, oxlintConfigFiles, "oxlint"))) {
+  if (
+    !(await isCommandAvailable("oxlint", { cwd, preferLocal: true })) ||
+    !(await usesTool(cwd, oxlintConfigFiles, "oxlint"))
+  ) {
     return undefined;
   }
 
@@ -131,7 +134,10 @@ async function createStylelintRunner(
   files: string[],
   options: RawLintOptions,
 ): Promise<LintRunner | undefined> {
-  if (!(await isCommandAvailable("stylelint")) || !(await usesTool(cwd, stylelintConfigFiles, "stylelint"))) {
+  if (
+    !(await isCommandAvailable("stylelint", { cwd, preferLocal: true })) ||
+    !(await usesTool(cwd, stylelintConfigFiles, "stylelint"))
+  ) {
     return undefined;
   }
 

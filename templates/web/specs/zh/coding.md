@@ -1,4 +1,4 @@
-# TypeScript 编码规范
+# TypeScript Coding Specification
 
 ## 命名
 
@@ -271,3 +271,13 @@ type Getter<T = unknown, This = void> = (this: This) => T;
       1. Confirm the filename is correct.
       2. Try to use the `ignoreCase` option.
   ```
+
+## 最佳实践
+
+- 对外公开的符号必须编写文档注释，否则仅当代码晦涩、需进一步说明时才编写注释。
+- 比较值的相等性时，需注意原生方法有以下几点不同：
+  - `===` 将 `NaN` 视为互不相等，将 `number` 和 `bigint` 视为互不相等。
+  - `Object.is` 将 `+0` 和 `-0` 视为不相等，将 `number` 和 `bigint` 视为互不相等。
+  - SameValueZero 算法，将 `number` 和 `bigint` 视为互不相等。
+  - Map 和 Set 的键/值相等性使用 SameValueZero 算法。
+  - Array 的 `indexOf`、`lastIndexOf` 方法使用 `===` 语义，`includes` 方法使用 SameValueZero 算法。

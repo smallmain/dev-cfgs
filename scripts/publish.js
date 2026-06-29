@@ -1,5 +1,5 @@
-import { spawn } from "node:child_process";
 import path from "node:path";
+import spawn from "nano-spawn";
 import { buildPackageFiles, outDir, readJson, rootDir, writeJson } from "./build.js";
 
 const versionBumps = new Set(["major", "minor", "patch"]);
@@ -82,57 +82,29 @@ function hasDryRunArg(args) {
   return args.some(arg => arg === "--dry-run" || arg === "--dry-run=true");
 }
 
-function runCommand(command, args, cwd = rootDir) {
-  return new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      cwd,
-      stdio: "inherit",
-    });
-
-    child.on("error", reject);
-    child.on("exit", code => {
-      if (code === 0) {
-        resolve();
-        return;
-      }
-
-      reject(new Error(`${command} ${args.join(" ")} exited with code ${code}.`));
-    });
+async function runCommand(command, args, cwd = rootDir) {
+  await spawn(command, args, {
+    cwd,
+    stdio: "inherit",
   });
 }
 
-function readCommandOutput(command, args, cwd = rootDir) {
-  return new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      cwd,
-      stdio: ["ignore", "pipe", "pipe"],
-    });
-    let stdout = "";
-    let stderr = "";
-
-    child.stdout.on("data", chunk => {
-      stdout += chunk;
-    });
-    child.stderr.on("data", chunk => {
-      stderr += chunk;
-    });
-    child.on("error", reject);
-    child.on("exit", code => {
-      if (code === 0) {
-        resolve(stdout);
-        return;
-      }
-
-      reject(new Error(`${command} ${args.join(" ")} exited with code ${code}.\n${stderr}`));
-    });
+async function readCommandOutput(command, args, cwd = rootDir) {
+  const result = await spawn(command, args, {
+    cwd,
+    stdio: ["ignore", "pipe", "pipe"],
   });
+
+  return result.stdout;
 }
 
 async function ensureCleanGitWorkingTree() {
   const status = await readCommandOutput("git", ["status", "--porcelain"]);
 
   if (status.trim()) {
-    throw new Error("Cannot publish with uncommitted changes. Commit or stash them before publishing.");
+    throw new Error(
+      "Cannot publish with uncommitted changes. Commit or stash them before publishing.",
+    );
   }
 }
 

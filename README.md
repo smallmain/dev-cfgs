@@ -78,20 +78,33 @@ npm i -D @smallmains/dev
 ### create
 
 ```bash
-npx sm create
+npx sm create                 # Interactive interface
+npx sm create --yes           # Create directly, skipping the interactive interface
+npx sm create --stack web     # Control defaults through arguments; use `-h` to view all arguments
 ```
 
-This command creates a project from the selected template in the current working directory. It does not empty the directory, but it will overwrite files with the same names.
+This command quickly creates a project from a preset template.
+
+- It does not empty the current working directory, but it will overwrite existing files.
 
 ### lint
 
 ```bash
-npx sm lint
-npx sm lint --fix
-npx sm lint src/index.ts
-npx sm lint --commit-message "feat: add login"
-npx sm lint --commit-message .git/COMMIT_EDITMSG --file
+npx sm lint                 # Check all files
+npx sm lint src/**/*.ts     # Check specified files
+
+npx sm lint --fix           # Automatically fix errors
+
+npx sm lint --commit-message "feat: add login"              # Check a commit message
+npx sm lint --commit-message .git/COMMIT_EDITMSG --file     # Check a commit message file
 ```
+
+This command checks files using Linters installed in the project.
+
+Supported Linters:
+
+- Oxlint
+- Stylelint
 
 ### staged-run
 
@@ -107,7 +120,7 @@ This command appends matching Git staged files to the specified command and runs
 npx sm set-git-hook
 ```
 
-This command installs Git Hooks:
+This command installs preset Git Hooks:
 
 - `pre-commit`: Uses `sm staged-run` to run lint on staged files.
 - `commit-msg`: Uses `sm lint --commit-message "$1" --file` to validate commit messages.
@@ -146,9 +159,10 @@ Example:
 
 ## VS Code Config
 
-### Web
+The `.vscode` directory is generated dynamically by `sm create` based on the selected tech stack and components.
 
-The `.vscode` directory is generated dynamically by `sm create` based on the selected tech stack and components. The base configuration recommends EditorConfig and OXC. When the CSS component is selected, Stylelint is also recommended and `stylelint.validate` is generated.
+- `settings.json`: Includes formatting, validation, and other settings.
+- `extensions.json`: Recommends VS Code extensions to install.
 
 ## Oxlint Config
 
@@ -485,6 +499,10 @@ export default createStore();
 - Run `pnpm run build` to build the project.
 - Run `pnpm run publish` to publish a new version. When `--version` is specified, it updates `package.json`, commits and pushes the version change, builds, then publishes.
   - `--version <version>`: Specifies the version number, such as `patch`, `minor`, `major`, or an exact version.
+
+### CLI create
+
+The `npx sm create` command uses fields from `package.json` as default values.
 
 ## License
 

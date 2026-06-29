@@ -1,65 +1,127 @@
-import { spawn } from "node:child_process";
+import spawn, { SubprocessError } from "nano-spawn";
 
 export interface SpawnResult {
   code: number;
   signal: NodeJS.Signals | null;
 }
 
-export function isCommandAvailable(command: string): Promise<boolean> {
-  return new Promise(resolve => {
-    const child = spawn(command, ["--version"], {
-      stdio: "ignore",
-    });
-
-    child.on("error", error => {
-      if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-        resolve(false);
-        return;
-      }
-
-      resolve(true);
-    });
-    child.on("exit", () => resolve(true));
-  });
+interface CommandOptions {
+  cwd?: string;
+  preferLocal?: boolean;
 }
 
-export function runCommand(
+interface RunCommandOptions extends CommandOptions {
+  stdio?: "ignore" | "inherit";
+}
+
+interface ReadCommandOutputOptions extends CommandOptions {
+  stderr?: "ignore" | "inherit";
+}
+
+export async function isCommandAvailable(
+  command: string,
+  options: CommandOptions = {},
+): Promise<boolean> {
+  try {
+    await spawn(command, ["--version"], {
+      cwd: options.cwd,
+      preferLocal: options.preferLocal,
+      stdio: "ignore",
+    });
+    return true;
+  } catch (error) {
+    return getSpawnResult(error) !== undefined;
+  }
+}
+
+export async function runCommand(
   command: string,
   args: string[],
-  options: { cwd?: string; stdio?: "ignore" | "inherit" } = {},
+  options: RunCommandOptions = {},
 ): Promise<SpawnResult> {
-  return new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
+  try {
+    await spawn(command, args, {
       cwd: options.cwd,
+      preferLocal: options.preferLocal,
       stdio: options.stdio ?? "inherit",
     });
 
-    child.on("error", reject);
-    child.on("exit", (code, signal) => resolve({ code: code ?? 1, signal }));
-  });
+    return { code: 0, signal: null };
+  } catch (error) {
+    const result = getSpawnResult(error);
+
+    if (result) {
+      return result;
+    }
+
+    throw error;
+  }
 }
 
-export function readCommandOutput(
+export async function runCommandOrThrow(
   command: string,
   args: string[],
-  options: { cwd?: string; stderr?: "ignore" | "inherit" } = {},
+  options: RunCommandOptions = {},
+): Promise<void> {
+  const result = await runCommand(command, args, options);
+
+  if (result.code !== 0) {
+    throw new Error(`${command} ${args.join(" ")} exited with code ${result.code}.`);
+  }
+}
+
+export async function commandSucceeds(
+  command: string,
+  args: string[],
+  options: CommandOptions = {},
+): Promise<boolean> {
+  try {
+    const result = await runCommand(command, args, {
+      ...options,
+      stdio: "ignore",
+    });
+
+    return result.code === 0;
+  } catch {
+    return false;
+  }
+}
+
+export async function readCommandOutput(
+  command: string,
+  args: string[],
+  options: ReadCommandOutputOptions = {},
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    const child = spawn(command, args, {
+  try {
+    const result = await spawn(command, args, {
       cwd: options.cwd,
+      preferLocal: options.preferLocal,
       stdio: ["ignore", "pipe", options.stderr ?? "inherit"],
     });
 
-    child.stdout.on("data", chunk => chunks.push(Buffer.from(chunk)));
-    child.on("error", reject);
-    child.on("exit", code => {
-      if (code === 0) {
-        resolve(Buffer.concat(chunks).toString("utf8"));
-        return;
-      }
+    return result.stdout;
+  } catch (error) {
+    const result = getSpawnResult(error);
 
-      reject(new Error(`${command} ${args.join(" ")} exited with code ${code ?? 1}.`));
-    });
-  });
+    if (result) {
+      throw new Error(`${command} ${args.join(" ")} exited with code ${result.code}.`);
+    }
+
+    throw error;
+  }
+}
+
+function getSpawnResult(error: unknown): SpawnResult | undefined {
+  if (!(error instanceof SubprocessError)) {
+    return undefined;
+  }
+
+  if (error.exitCode === undefined && error.signalName === undefined) {
+    return undefined;
+  }
+
+  return {
+    code: error.exitCode ?? 1,
+    signal: (error.signalName as NodeJS.Signals | undefined) ?? null,
+  };
 }

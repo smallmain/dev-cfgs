@@ -78,20 +78,33 @@ npm i -D @smallmains/dev
 ### create
 
 ```bash
-npx sm create
+npx sm create                 # 交互式界面
+npx sm create --yes           # 直接创建，跳过交互式界面
+npx sm create --stack web     # 通过参数控制默认值，使用 `-h` 查看所有参数
 ```
 
-该命令会在当前工作目录创建指定模板的项目，不会清空目录，但会覆盖同名文件。
+该命令用于快速创建预设模板项目。
+
+- 执行时不会清空当前工作目录，只会覆盖已有文件。
 
 ### lint
 
 ```bash
-npx sm lint
-npx sm lint --fix
-npx sm lint src/index.ts
-npx sm lint --commit-message "feat: add login"
-npx sm lint --commit-message .git/COMMIT_EDITMSG --file
+npx sm lint                 # 检查所有文件
+npx sm lint src/**/*.ts     # 检查指定文件
+
+npx sm lint --fix           # 自动修复错误
+
+npx sm lint --commit-message "feat: add login"              # 检查提交信息
+npx sm lint --commit-message .git/COMMIT_EDITMSG --file     # 检查提交信息文件
 ```
+
+该命令使用项目中安装的 Linter 进行检查。
+
+支持的 Linter：
+
+- Oxlint
+- Stylelint
 
 ### staged-run
 
@@ -99,7 +112,7 @@ npx sm lint --commit-message .git/COMMIT_EDITMSG --file
 npx sm staged-run "npm run lint" "."
 ```
 
-该命令会把匹配 Git 暂存区文件追加到指定命令后执行。
+该命令将 Git 暂存区文件追加到指定命令后执行。
 
 ### set-git-hook
 
@@ -107,7 +120,7 @@ npx sm staged-run "npm run lint" "."
 npx sm set-git-hook
 ```
 
-该命令会安装 Git Hooks：
+该命令会安装预设的 Git Hooks：
 
 - `pre-commit`: 使用 `sm staged-run` 对暂存文件执行 lint。
 - `commit-msg`: 使用 `sm lint --commit-message "$1" --file` 校验提交信息。
@@ -146,9 +159,10 @@ npm i -D @smallmains/dev
 
 ## VS Code Config
 
-### Web
+由 `sm create` 根据选择的技术栈和组件动态生成 `.vscode` 目录。
 
-由 `sm create` 根据选择的技术栈和组件动态生成 `.vscode` 目录。基础配置推荐 EditorConfig 与 OXC；选择 CSS 组件时额外推荐 Stylelint 并生成 `stylelint.validate`。
+- `settings.json`：包括格式化、校验等设置。
+- `extensions.json`：推荐安装的 VS Code 扩展。
 
 ## Oxlint Config
 
@@ -485,6 +499,10 @@ export default createStore();
 - 执行 `pnpm run build` 构建项目。
 - 执行 `pnpm run publish` 发布新版本；指定 `--version` 时会先更新 `package.json`，提交并推送版本变更，再构建并发布。
   - `--version <version>`：指定版本号（例如 `patch`、`minor`、`major` 或具体版本号）。
+
+### CLI create
+
+`npx sm create` 命令会使用 `package.json` 中的字段作为默认值。
 
 ## 许可证
 

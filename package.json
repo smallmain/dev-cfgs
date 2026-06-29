@@ -39,6 +39,7 @@
     "dev": "node scripts/dev.js",
     "dev:prod": "node scripts/dev-prod.js",
     "build": "node scripts/build.js",
+    "test": "vitest run",
     "publish": "node scripts/publish.js"
   },
   "dependencies": {
@@ -51,6 +52,7 @@
     "@oxlint/plugins": "^1.70.0",
     "commander": "^15.0.0",
     "eslint-plugin-security": "^4.0.1",
+    "nano-spawn": "^2.1.0",
     "oxc-parser": "^0.136.0",
     "oxc-resolver": "^11.21.3",
     "postcss-html": "^1.8.1",
@@ -78,7 +80,8 @@
     "oxlint": "^1.70.0",
     "oxlint-tsgolint": "^0.23.0",
     "stylelint": "^17.13.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   },
   "peerDependenciesMeta": {
     "oxfmt": {
@@ -94,6 +97,9 @@
       "optional": true
     },
     "typescript": {
+      "optional": true
+    },
+    "vitest": {
       "optional": true
     }
   },

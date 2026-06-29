@@ -20,6 +20,7 @@ const base = defineConfig({
             "experimental",
             "decorator",
             "platform",
+            "bin",
             "__NO_SIDE_EFFECTS__",
             "__PURE__",
           ].map(v => [v, v]),

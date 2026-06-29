@@ -1,5 +1,5 @@
-import { spawn } from "node:child_process";
 import path from "node:path";
+import spawn from "nano-spawn";
 import { buildPackageFiles, outDir } from "./build.js";
 
 function normalizeArgs(args) {
@@ -11,22 +11,10 @@ function getCliCwd() {
   return process.env.INIT_CWD || process.cwd();
 }
 
-function runCli(args) {
-  return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [path.join(outDir, "bin/sm.js"), ...args], {
-      cwd: getCliCwd(),
-      stdio: "inherit",
-    });
-
-    child.on("error", reject);
-    child.on("exit", code => {
-      if (code === 0) {
-        resolve();
-        return;
-      }
-
-      reject(new Error(`sm exited with code ${code}.`));
-    });
+async function runCli(args) {
+  await spawn(process.execPath, [path.join(outDir, "bin/sm.js"), ...args], {
+    cwd: getCliCwd(),
+    stdio: "inherit",
   });
 }
 

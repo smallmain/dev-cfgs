@@ -1,8 +1,8 @@
-import { spawn } from "node:child_process";
 import { access, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { stdin, stdout } from "node:process";
 import { emitKeypressEvents } from "node:readline";
+import { commandSucceeds, runCommandOrThrow } from "./command-utils.ts";
 import {
   getAuthor,
   getDependencyVersion,
@@ -171,7 +171,7 @@ export async function runCreateCommand(
   }
 
   console.log(`Installing dependencies with ${context.packageManager}...`);
-  await runCommand(context.packageManager, ["install"], targetDir);
+  await runCommandOrThrow(context.packageManager, ["install"], { cwd: targetDir });
 
   console.log(`Created ${context.packageName} in ${targetDir}`);
 }
@@ -1144,48 +1144,17 @@ async function ensureGitRepository(targetDir: string): Promise<void> {
     return;
   }
 
-  if (await commandSucceeds("git", ["rev-parse", "--is-inside-work-tree"], targetDir)) {
+  if (await commandSucceeds("git", ["rev-parse", "--is-inside-work-tree"], { cwd: targetDir })) {
     return;
   }
 
   console.log("Initializing Git repository...");
-  await runCommand("git", ["init"], targetDir);
+  await runCommandOrThrow("git", ["init"], { cwd: targetDir });
 }
 
 async function writeJson(filePath: string, value: unknown): Promise<void> {
   await mkdir(path.dirname(filePath), { recursive: true });
   await writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`);
-}
-
-function runCommand(command: string, args: string[], cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      cwd,
-      stdio: "inherit",
-    });
-
-    child.on("error", reject);
-    child.on("exit", code => {
-      if (code === 0) {
-        resolve();
-        return;
-      }
-
-      reject(new Error(`${command} ${args.join(" ")} exited with code ${code}.`));
-    });
-  });
-}
-
-function commandSucceeds(command: string, args: string[], cwd: string): Promise<boolean> {
-  return new Promise(resolve => {
-    const child = spawn(command, args, {
-      cwd,
-      stdio: "ignore",
-    });
-
-    child.on("error", () => resolve(false));
-    child.on("exit", code => resolve(code === 0));
-  });
 }
 
 async function pathExists(filePath: string): Promise<boolean> {
