@@ -4,10 +4,10 @@
 
 This document defines a specification-driven development process.
 
-A "specification" describes the expected behavior. It lives here:
+A "specification" describes the expected behavior.
 
 ```
-specs/
+spec/
 ├── requirement/                        # Source of truth (your system's behavior)
 └── changes/                            # Proposed updates (one folder per change)
     └── <change-name>/

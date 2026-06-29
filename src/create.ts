@@ -297,12 +297,12 @@ function validateOptions(values: string[], supportedValues: Set<string>, label: 
 
 function validateCreateContext(context: CreateContext): void {
   const requiredFields: Array<[string, string]> = [
-    ["Package name", context.packageName],
-    ["English description", context.description],
+    ["Package Name", context.packageName],
+    ["Package Description", context.description],
     ["Chinese Name", context.zhName],
     ["Chinese Description", context.zhDescription],
-    ["GitHub owner", context.githubOwner],
-    ["GitHub repository", context.githubRepo],
+    ["GitHub Owner", context.githubOwner],
+    ["GitHub Repo", context.githubRepo],
   ];
   const missingField = requiredFields.find(([, value]) => value.trim().length === 0);
 
@@ -435,12 +435,12 @@ async function runCreateForm(initialContext: CreateContext): Promise<CreateConte
 
 function createFormItems(context: CreateContext): FormItem[] {
   const items: FormItem[] = [
-    { kind: "text", field: "packageName", label: "Package name" },
-    { kind: "text", field: "description", label: "Description" },
+    { kind: "text", field: "packageName", label: "Package Name" },
+    { kind: "text", field: "description", label: "Package Description" },
     { kind: "text", field: "zhName", label: "Chinese Name" },
     { kind: "text", field: "zhDescription", label: "Chinese Description" },
-    { kind: "text", field: "githubOwner", label: "GitHub owner" },
-    { kind: "text", field: "githubRepo", label: "GitHub repo" },
+    { kind: "text", field: "githubOwner", label: "GitHub Owner" },
+    { kind: "text", field: "githubRepo", label: "GitHub Repo" },
     {
       kind: "toggle",
       field: "stacks",

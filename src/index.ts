@@ -22,15 +22,18 @@ async function main(): Promise<void> {
     .command("create")
     .description("Create a project in the current working directory.")
     .option("-y, --yes", "Use defaults and skip prompts.")
-    .option("--name <name>", "Package name.")
-    .option("--description <description>", "English description.")
+    .option("--name <name>", "Package Name.")
+    .option("--description <description>", "Package Description.")
     .option("--zh-name <name>", "Chinese display name.")
     .option("--zh-description <description>", "Chinese description.")
-    .option("--github-owner <owner>", "GitHub repository owner.")
-    .option("--github-repo <repo>", "GitHub repository name.")
+    .option("--github-owner <owner>", "GitHub Owner.")
+    .option("--github-repo <repo>", "GitHub Repo.")
     .option("--runtime <runtime>", "Runtime environment. Supports neutral, browser, nodejs.")
     .option("--node-version <version>", "Node.js version when runtime is nodejs.")
-    .option("--css <css>", "CSS mode when component css is enabled. Supports native, css-modules, tailwind.")
+    .option(
+      "--css <css>",
+      "CSS mode when component css is enabled. Supports native, css-modules, tailwind.",
+    )
     .option(
       "--stack <stack>",
       "Tech stack. Repeat or use commas for multiple values.",
@@ -53,11 +56,8 @@ async function main(): Promise<void> {
     .option("--commit-message <message>", "Lint a commit message.")
     .option("--file", "Read --commit-message as a file path.")
     .option("--fix", "Automatically fix problems.")
-    .action(
-      (
-        files: string[],
-        options: { commitMessage?: string; file?: boolean; fix?: boolean },
-      ) => runLintCommand(files, options),
+    .action((files: string[], options: { commitMessage?: string; file?: boolean; fix?: boolean }) =>
+      runLintCommand(files, options),
     );
 
   program

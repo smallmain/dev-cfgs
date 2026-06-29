@@ -19,7 +19,3 @@
 ### set-git-hook
 
 该命令会安装预设的 Git Hooks。
-
-## 配置
-
-支持配置文件：[Config](./config.md)

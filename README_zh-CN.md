@@ -30,7 +30,7 @@ SmallMain 使用的开发脚手架。
     <th>技术</th><th>组件</th><th>最后更新</th>
   </tr>
   <tr>
-    <td rowspan="3">-</td>
+    <td rowspan="4">-</td>
   </tr>
   <tr>
     <td><a href="#cli">CLI</a></td><td>2026.06.15</td>
@@ -38,11 +38,11 @@ SmallMain 使用的开发脚手架。
   <tr>
     <td><a href="#editor-config">Editor Config</a></td><td>EditorConfig Specification v0.17.2; 2026.06.15</td>
   </tr>
-  <tr>
-    <td rowspan="6">Web</td>
+    <tr>
+    <td><a href="#vs-code-config">VS Code Config</a></td><td>VS Code v1.124.2; 2026.06.15</td>
   </tr>
   <tr>
-    <td><a href="#web">VS Code Config</a></td><td>VS Code v1.124.2; 2026.06.15</td>
+    <td rowspan="5">Web</td>
   </tr>
   <tr>
     <td><a href="#ts-config">TS Config</a></td><td>2025.06.15</td>
