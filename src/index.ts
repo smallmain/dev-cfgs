@@ -38,7 +38,7 @@ async function main(): Promise<void> {
     .option("--package-manager <package-manager>", "Package manager. Supports npm, pnpm.")
     .option(
       "--component <component>",
-      "Optional component. Supports git-hook, css, react, security. Repeat or use commas for multiple values.",
+      "Optional component. Supports git-hook, react, css, security. Repeat or use commas for multiple values.",
       collectOption,
       [],
     )

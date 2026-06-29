@@ -479,8 +479,8 @@ function createFormItems(context: CreateContext): FormItem[] {
     label: "Components",
     choices: [
       { label: "Git Hook", value: "git-hook" },
-      { label: "CSS", value: "css" },
       { label: "React", value: "react" },
+      { label: "CSS", value: "css" },
       { label: "Security", value: "security" },
     ],
   });
